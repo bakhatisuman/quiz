@@ -5,4 +5,16 @@
     <string name="quit_quiz">Do you want to quit the Quiz !</string>
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
+    <string name="loading_your_first_question">Loading your first question ...</string>
+    <string name="option_first">Option First</string>
+    <string name="option_second">Option Second</string>
+    <string name="option_third">Option Third</string>
+    <string name="option_fourth">Option Fourth</string>
+    <string name="quit">Quit</string>
+    <string name="next">Next</string>
+    <string name="restart">Restart</string>
+    <string name="dash">-</string>
+    <string name="_caps">YOUR SCORE</string>
+    <string name="congratulations">Congratulations!</string>
+    <string name="trophy">trophy</string>
 </resources>

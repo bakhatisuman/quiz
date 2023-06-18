@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.quizapp.R;
 import com.example.quizapp.features.dashboard.dto.QuizQuestion;
 import com.example.quizapp.viewmodel.QuizViewModel;
@@ -49,7 +51,7 @@ public class HomeFragment extends Fragment {
 
 
     private TextView option1, option2, option3, option4, questionCounter, tv_question, tv_timer;
-    private Button nxtBtn , quizBtn;
+    private Button nxtBtn;
     int index = 0;
     CountDownTimer timer;
     int totalCorrectAnswers = 0;
@@ -67,17 +69,21 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
+        closeApplicationOnBackPressed();
+    }
 
+
+    private void closeApplicationOnBackPressed(){
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                getActivity().finishAndRemoveTask();
+                showQuitDialogForBackPressed();
+
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this,callback);
+
     }
 
     @Override
@@ -103,15 +109,23 @@ public class HomeFragment extends Fragment {
 
         option4.setOnClickListener(view12 -> makeSelected(view12));
 
+
+
         nxtBtn.setOnClickListener(view1 -> {
-            reset();
-            if (index < questions.size()-1) {
-                index++;
+            if (questions != null && !questions.isEmpty()){
+                reset();
+                if (index < questions.size()-1) {
+                    index++;
 //                showAllOptionTextView();
-                setNextQuestion();
-            } else {
-                openResultFragment(view);
+                    setNextQuestion();
+                } else {
+                    openResultFragment(view);
+                }
+            }else {
+                Toast.makeText(requireContext(),"Questions are not fetched yet", Toast.LENGTH_SHORT).show();
             }
+
+
         });
 
         questionCounter = view.findViewById(R.id.questionCounter);
@@ -251,6 +265,9 @@ public class HomeFragment extends Fragment {
             @Override
             public void onTick(long millisUntilFinished) {
                 tv_timer.setText(String.valueOf(millisUntilFinished / 1000));
+                if (millisUntilFinished <= 20){
+                    tv_timer.setTextColor(ContextCompat.getColor(requireContext(),R.color.colorPurple));
+                }
             }
 
             @Override
@@ -303,7 +320,10 @@ public class HomeFragment extends Fragment {
 
     private void openResultFragment(View view){
         final NavController navController = Navigation.findNavController(view);
-        navController.navigate(R.id.action_homeFragment_to_resultFragment2);
+        Bundle bundle = new Bundle();
+        String totalAnswers = String.format("%d/%d", (totalCorrectAnswers), questions.size());
+        bundle.putString("score", totalAnswers);
+        navController.navigate(R.id.action_homeFragment_to_resultFragment2, bundle);
     }
 
     private void closeApplication(View view){
@@ -323,6 +343,25 @@ public class HomeFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int id) {
                         // START THE GAME!
                         closeApplication(view);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        dialog.dismiss();
+                    }
+                });
+
+        builder.show();
+    }
+    private void showQuitDialogForBackPressed(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.quit_quiz).
+                setCancelable(false)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // START THE GAME!
+                        getActivity().finishAndRemoveTask();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

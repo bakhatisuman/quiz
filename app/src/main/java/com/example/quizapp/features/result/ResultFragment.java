@@ -3,6 +3,8 @@ package com.example.quizapp.features.result;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -13,10 +15,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+
 import com.example.quizapp.R;
 
 
 public class ResultFragment extends Fragment {
+    private String UserScore = "";
     public ResultFragment() {
         // Required empty public constructor
     }
@@ -30,8 +35,7 @@ public class ResultFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
+        closeApplicationOnBackPressed();
     }
 
     @Override
@@ -39,11 +43,19 @@ public class ResultFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_result, container, false);
+
+
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        TextView score = view.findViewById(R.id.score);
+
+        assert getArguments() != null;
+        score.setText(getArguments().getString("score", ""));
+
         Button quitBtn = view.findViewById(R.id.quitBtn);
         Button restartBtn = view.findViewById(R.id.reStartBtn);
         quitBtn.setOnClickListener(view1 -> {
@@ -56,6 +68,7 @@ public class ResultFragment extends Fragment {
             openHomeFragment(view);
         });
     }
+
 
 
     private void openHomeFragment(View view){
@@ -81,6 +94,41 @@ public class ResultFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int id) {
                         // START THE GAME!
                         closeApplication(view);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        dialog.dismiss();
+                    }
+                });
+
+        builder.show();
+    }
+
+
+    private void closeApplicationOnBackPressed(){
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                showQuitDialogForBackPressed();
+
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this,callback);
+
+    }
+
+
+    private void showQuitDialogForBackPressed(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.quit_quiz).
+                setCancelable(false)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // START THE GAME!
+                        getActivity().finishAndRemoveTask();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

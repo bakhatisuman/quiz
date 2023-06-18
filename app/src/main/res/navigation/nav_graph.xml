@@ -30,5 +30,8 @@
             android:id="@+id/action_resultFragment_to_homeFragment2"
             app:destination="@id/homeFragment"
             app:popUpTo="@id/homeFragment" />
+        <argument
+            android:name="score"
+            app:argType="string" />
     </fragment>
 </navigation>
