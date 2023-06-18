@@ -28,6 +28,7 @@ public class AppModule {
 
     private final String HTTP_DIR_CACHE = "quiz";
     private final Long CACHE_SIZE = 10 * 1024 * 1024L;
+    int maxStale = 60 * 60 * 24 * 30; // Offline cache available for 30 days
 //    private final String HEADER_TYPE = "Authorization";
     private final String API_BASE_URL = "https://opentdb.com/";
 
@@ -76,6 +77,7 @@ public class AppModule {
 
 
                     Request.Builder builder = original.newBuilder()
+//                            .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
 //                        .addHeader(HEADER_TYPE, header)
 //                        .addHeader("App-Type", "farmer")
                             .method(original.method(), original.body());

@@ -1,26 +1,29 @@
 package com.example.quizapp.features.dashboard.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.example.quizapp.R;
 import com.example.quizapp.features.dashboard.dto.QuizQuestion;
 import com.example.quizapp.viewmodel.QuizViewModel;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -80,7 +83,6 @@ public class HomeFragment extends Fragment {
         option4 = view.findViewById(R.id.option_4);
 
         nxtBtn = view.findViewById(R.id.nextBtn);
-        quizBtn = view.findViewById(R.id.quizBtn);
 
         option1.setOnClickListener(view15 -> makeSelected(view15));
 
@@ -93,40 +95,34 @@ public class HomeFragment extends Fragment {
 
         nxtBtn.setOnClickListener(view1 -> {
             reset();
-            if (index < questions.size()) {
+            if (index < questions.size()-1) {
                 index++;
+//                showAllOptionTextView();
                 setNextQuestion();
             } else {
-                // todo show result fragment
+                openResultFragment(view);
             }
         });
-
-        quizBtn.setOnClickListener(view16 -> {
-            // todo get out of here.
-        });
-
-
-
-
-
-
-
 
         questionCounter = view.findViewById(R.id.questionCounter);
         tv_question = view.findViewById(R.id.question);
         tv_timer = view.findViewById(R.id.timer);
 
-        Random random = new Random();
-        final int rand = random.nextInt(12);
-
-
-        ObserverData();
+        ObserverData(view);
 
 
         // Inflate the layout for this fragment
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Button quizButton = view.findViewById(R.id.quizBtn);
+        quizButton.setOnClickListener(view1 -> {
+            showQuitDialog(view);
+        });
+    }
 
     private void makeSelected(View view){
         if (timer != null) {
@@ -149,10 +145,12 @@ public class HomeFragment extends Fragment {
     }
 
     void reset() {
+        showAllOptionTextView();
         option1.setBackground(ContextCompat.getDrawable(requireContext(),(R.drawable.option_unselected)));
         option2.setBackground(ContextCompat.getDrawable(requireContext(),(R.drawable.option_unselected)));
         option3.setBackground(ContextCompat.getDrawable(requireContext(),(R.drawable.option_unselected)));
         option4.setBackground(ContextCompat.getDrawable(requireContext(),(R.drawable.option_unselected)));
+
     }
 
     void checkAnswer(TextView textView) {
@@ -177,21 +175,68 @@ public class HomeFragment extends Fragment {
             question = questions.get(index);
             tv_question.setText(question.getQuestion());
             correctAnswer = question.getCorrect_answer().trim();
-            List<String> options=new ArrayList<>();
-            options.addAll(question.getIncorrect_answers());
+            List<String> options = new ArrayList<>(question.getIncorrect_answers());
             options.add(question.getCorrect_answer().trim());
 
             Collections.shuffle(options);
 
-            option1.setText(options.get(0));
-            option2.setText(options.get(2));
-            option3.setText(options.get(3));
-            option4.setText(options.get(1));
+            if (options.size() >0){
+                if (options.get(0) != null){
+                    setOptionTextView(option1,options.get(0));
+                }
+            }else {
+                hideVisibilityOfTextView(option1);
+            }
+
+            if (options.size() >1){
+                if (options.get(1) != null){
+                    setOptionTextView(option2,options.get(1));
+                }
+            }else {
+                hideVisibilityOfTextView(option2);
+            }
+
+            if (options.size() >2){
+                if (options.get(2) != null){
+                    setOptionTextView(option3,options.get(2));
+                }
+            }else {
+                hideVisibilityOfTextView(option3);
+            }
+
+            if (options.size() >3){
+                if (options.get(3) != null){
+                    setOptionTextView(option4,options.get(3));
+                }
+            }else {
+                hideVisibilityOfTextView(option4);
+            }
         }
     }
 
+    private void setOptionTextView(TextView tv, String text){
+        tv.setText(text);
+    }
 
-    void resetTimer() {
+    private void hideVisibilityOfTextView(TextView tv){
+        tv.setVisibility(View.GONE);
+    }
+
+    private void showOptionTextView(TextView tv){
+        tv.setVisibility(View.VISIBLE);
+    }
+
+    private void showAllOptionTextView(){
+        showOptionTextView(option1);
+        showOptionTextView(option2);
+        showOptionTextView(option3);
+        showOptionTextView(option4);
+    }
+
+    private
+
+
+    void resetTimer(View view) {
         timer = new CountDownTimer(120000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -200,7 +245,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFinish() {
-                // todo show result fragment.
+                openResultFragment(view);
 
             }
         };
@@ -212,7 +257,7 @@ public class HomeFragment extends Fragment {
 
 
 
-    private void ObserverData(){
+    private void ObserverData(View view){
         quixVm.sendQuizRequest().observe(getViewLifecycleOwner(), data -> {
             if (data.getLoading()){
                 Timber.v("HomeFragment loading.");
@@ -236,7 +281,7 @@ public class HomeFragment extends Fragment {
 
             if (data.getLdData() != null){
                 questions = data.getLdData().getResults();
-                resetTimer();
+                resetTimer(view);
                 setNextQuestion();
 
                 Timber.v("HomeFragment mutableData" + data);
@@ -245,5 +290,39 @@ public class HomeFragment extends Fragment {
         });
     }
 
+
+    private void openResultFragment(View view){
+        final NavController navController = Navigation.findNavController(view);
+        navController.navigate(R.id.action_homeFragment_to_resultFragment2);
+    }
+
+    private void closeApplication(View view){
+        final NavController navController = Navigation.findNavController(view);
+        navController.navigate(R.id.action_resultFragment_to_homeFragment2);
+        NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.splashFragment, true).build();
+        navController.navigate(R.id.action_resultFragment_to_homeFragment2,null,navOptions);
+
+
+    }
+
+    private void showQuitDialog(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.quit_quiz).
+                setCancelable(false)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // START THE GAME!
+                        closeApplication(view);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        dialog.dismiss();
+                    }
+                });
+
+        builder.show();
+    }
 
 }

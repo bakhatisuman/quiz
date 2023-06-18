@@ -2,9 +2,13 @@ package com.example.quizapp.features.splash;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -66,11 +70,30 @@ public class SplashFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_splash, container, false);
+
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        waitingTimeForSplash(view);
     }
 
 
+    private void waitingTimeForSplash(View view){
+        int secondsDelayed = 1;
+        new Handler().postDelayed(() -> {
+            openHomeFragment(view);
+        }, secondsDelayed * 1000);
+    }
 
 
+    private void openHomeFragment(View view){
+        final NavController navController = Navigation.findNavController(view);
+        navController.navigate(R.id.action_splashFragment_to_homeFragment2);
+
+    }
 
 
 }

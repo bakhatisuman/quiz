@@ -59,21 +59,43 @@
 
     <Button
         android:textSize="18sp"
-        android:id="@+id/restartBtn"
+        android:id="@+id/reStartBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
+        android:layout_marginTop="24sp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginRight="30dp"
         android:background="@drawable/btn_back"
-        android:text="Restart Quiz"
-        android:onClick="reStartQuiz"
+        android:text="Restart"
         android:textColor="@color/white"
         app:backgroundTint="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/quitBtn"
+        app:layout_constraintTop_toBottomOf="@+id/score" />
+
+    <Button
+        android:textSize="18sp"
+        android:id="@+id/quitBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="24sp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/btn_back"
+        app:backgroundTint="@null"
+        android:text="Quit"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/reStartBtn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/score" />
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

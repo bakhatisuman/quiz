@@ -70,7 +70,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:gravity="start|center"
-        android:text="Who invented android studio?"
+        android:text="Loading you first question ..."
         android:textColor="@color/color_white"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/view5"
@@ -80,17 +80,34 @@
 
 
 
+
+
+
+    <TextView
+        android:textSize="18sp"
+        android:id="@+id/hint_answer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@android:color/tertiary_text_dark"
+        android:padding="0dp"
+        android:text="Please select correct answer from below:"
+        app:layout_constraintEnd_toEndOf="@+id/view5"
+        app:layout_constraintStart_toStartOf="@+id/view5"
+        app:layout_constraintTop_toBottomOf="@+id/view5" />
+
+
     <TextView
         android:id="@+id/option_1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/option_unselected"
         android:padding="16dp"
         android:hint="Option First"
-        app:layout_constraintEnd_toEndOf="@+id/view5"
-        app:layout_constraintStart_toStartOf="@+id/view5"
-        app:layout_constraintTop_toBottomOf="@+id/view5" />
+        app:layout_constraintEnd_toEndOf="@+id/hint_answer"
+        app:layout_constraintStart_toStartOf="@+id/hint_answer"
+        app:layout_constraintTop_toBottomOf="@+id/hint_answer" />
 
     <TextView
         android:id="@+id/option_2"

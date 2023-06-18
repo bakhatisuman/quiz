@@ -1,17 +1,9 @@
 package com.example.quizapp.features.dashboard;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.Bundle;
 import android.os.Handler;
-
 import com.example.quizapp.R;
-import com.example.quizapp.features.dashboard.fragment.HomeFragment;
-import com.example.quizapp.features.splash.SplashFragment;
-
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -26,32 +18,33 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putInt("some_int", 0);
 
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.fragmentContainer, SplashFragment.class, bundle)
-                    .commit();
+//            openSplashFragment();
 
-            waitingTimeForSplash();
+//            waitingTimeForSplash();
 
 
         }
-
-
-
-        /*QuizViewModel vm = new ViewModelProvider(this).get(QuizViewModel.class);
-        vm.sendProvinceListRequest();*/
 
     }
 
 
     private void waitingTimeForSplash(){
-        int secondsDelayed = 3;
+        int secondsDelayed = 1;
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 // open Home Fragment
-                moveFromSplashToHome();
+//                moveFromSplashToHome();
             }
         }, secondsDelayed * 1000);
+    }
+
+    /*private void openSplashFragment(){
+        Fragment fragment = new SplashFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer,fragment);
+        fragmentTransaction.commit();
+
     }
 
     private void moveFromSplashToHome(){
@@ -63,6 +56,16 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
+    private void moveFromHomeToResult(){
+
+        Fragment fragment = new ResultFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }*/
 
 
 
