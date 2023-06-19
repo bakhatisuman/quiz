@@ -290,8 +290,7 @@ public class HomeFragment extends Fragment {
                 Timber.v("HomeFragment loading.");
             }
             if (data.getInternetAvailable()){
-                Toast.makeText(requireContext(),"Internet is not available", Toast.LENGTH_SHORT).show();
-                Timber.v("HomeFragment Internet is available.");
+                Toast.makeText(requireContext(),"You are playing this quiz offline. Go online for new questions.", Toast.LENGTH_SHORT).show();
             }
 
             if (data.getTokenExpired()){
