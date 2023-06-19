@@ -8,7 +8,8 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 public interface RetrofitService {
-    @Headers("Cache-Control: max-age=640000")
+//    @Headers("isCacheAvailable : yes")
+    @Headers({"isCacheAvailable: yes"})
     @GET("api.php")
     Call<Quiz> sendQuizListRequest(@Query("amount") int amount);
 }

@@ -1,6 +1,8 @@
 package com.example.quizapp.repo;
 import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
+
+import com.example.quizapp.MainApplication;
 import com.example.quizapp.features.dashboard.dto.Quiz;
 import com.example.quizapp.network.FlowResponse;
 import com.example.quizapp.network.RetroCallback;
@@ -24,8 +26,15 @@ public class QuizRepo {
     public void sendQuizListRequest(MutableLiveData<FlowResponse<Quiz>> liveData){
         RetroHelper<Quiz> retroHelper = new RetroHelper<>();
 
+
+
         Call<Quiz> call =  retrofitService.sendQuizListRequest(10);
         FlowResponse<Quiz> flowResponse = new FlowResponse<>();
+
+        if (!MainApplication.hasNetwork()){
+            flowResponse.setInternetAvailable(true);
+            liveData.postValue(flowResponse);
+        }
 
         retroHelper.enqueue(call, new RetroCallback() {
             @Override

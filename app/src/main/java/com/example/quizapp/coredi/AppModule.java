@@ -1,11 +1,17 @@
 package com.example.quizapp.coredi;
 
 import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.example.quizapp.MainApplication;
 import com.example.quizapp.network.RetrofitService;
 import com.example.quizapp.repo.QuizRepo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
 import dagger.Module;
@@ -15,19 +21,25 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import timber.log.Timber;
 
 @Module
 @InstallIn(SingletonComponent.class)
 public class AppModule {
 
-    private final String HTTP_DIR_CACHE = "quiz";
+    private final String HTTP_DIR_CACHE = "quiz_cache";
     private final Long CACHE_SIZE = 10 * 1024 * 1024L;
+
+    public static final String HEADER_CACHE_CONTROL = "Cache-Control";
+    public static final String HEADER_PRAGMA = "Pragma";
     int maxStale = 60 * 60 * 24 * 30; // Offline cache available for 30 days
 //    private final String HEADER_TYPE = "Authorization";
     private final String API_BASE_URL = "https://opentdb.com/";
@@ -61,6 +73,55 @@ public class AppModule {
         return httpLoggingInterceptor;
     }
 
+    @Singleton
+    @Provides
+    public static Interceptor offlineInterceptor() {
+        return new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Log.d("AppModule", "offline interceptor: called.");
+                Request request = chain.request();
+
+                // prevent caching when network is on. For that we use the "networkInterceptor"
+                if (!MainApplication.hasNetwork()) {
+                    CacheControl cacheControl = new CacheControl.Builder()
+                            .maxStale(7, TimeUnit.DAYS)
+                            .build();
+
+                    request = request.newBuilder()
+                            .removeHeader(HEADER_PRAGMA)
+                            .removeHeader(HEADER_CACHE_CONTROL)
+                            .cacheControl(cacheControl)
+                            .build();
+                }
+
+                return chain.proceed(request);
+            }
+        };
+    }
+
+
+
+    @Singleton
+    @Provides
+    public static Interceptor networkInterceptor() {
+        return chain -> {
+            Log.d("AppModule", "network interceptor: called.");
+
+            Response response = chain.proceed(chain.request());
+
+            CacheControl cacheControl = new CacheControl.Builder()
+                    .maxAge(5, TimeUnit.SECONDS)
+                    .build();
+
+            return response.newBuilder()
+                    .removeHeader(HEADER_PRAGMA)
+                    .removeHeader(HEADER_CACHE_CONTROL)
+                    .header(HEADER_CACHE_CONTROL, cacheControl.toString())
+                    .build();
+        };
+    }
+
 
     @Singleton
     @Provides
@@ -69,7 +130,7 @@ public class AppModule {
 
         return new OkHttpClient.Builder().addInterceptor(chain -> {
                     Request original = chain.request();
-                    String header = "";
+//                    String header = "";
 
                     CacheControl cacheControl = new CacheControl.Builder()
                             .maxStale(30, TimeUnit.DAYS)
@@ -86,7 +147,8 @@ public class AppModule {
 
                     String isCacheAvailable = original.header("isCacheAvailable");
                     if (isCacheAvailable != null) {
-                        if (isCacheAvailable.equals("yes")) {
+                        if (isCacheAvailable.equals("yes".trim())) {
+                            Timber.v("AppModule isCacheAvailable " + isCacheAvailable);
                             request = builder.cacheControl(cacheControl).build();
                         } else {
                             request = builder.build();
@@ -97,11 +159,15 @@ public class AppModule {
 
                     return chain.proceed(request);
 
-                }).
-                addInterceptor(httpLoggingInterceptor).readTimeout(120, TimeUnit.SECONDS)
-                .connectTimeout(120, TimeUnit.SECONDS)
+                })
                 .cache(cache)
+                .addInterceptor(httpLoggingInterceptor).readTimeout(120, TimeUnit.SECONDS)
+                .addNetworkInterceptor(networkInterceptor())
+                .addInterceptor(offlineInterceptor())
+                .connectTimeout(120, TimeUnit.SECONDS)
                 .build();
+
+
 
     }
 
@@ -120,6 +186,7 @@ public class AppModule {
     public GsonConverterFactory provideGSonConverterFactory(Gson gSon) {
         return GsonConverterFactory.create(gSon);
     }
+
 
 
     @Singleton

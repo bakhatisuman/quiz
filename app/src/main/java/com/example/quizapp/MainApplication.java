@@ -1,6 +1,9 @@
 package com.example.quizapp;
 
 import android.app.Application;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,10 +15,33 @@ import timber.log.Timber;
 @HiltAndroidApp
 public class MainApplication extends Application {
 
+    private static MainApplication instance;
+
     @Override
     public void onCreate() {
     initTimberForLog();
         super.onCreate();
+        if(instance == null){
+            instance = this;
+        }
+    }
+
+
+    public static MainApplication getInstance(){
+        return instance;
+    }
+
+    public static boolean hasNetwork(){
+        return instance.isNetworkConnected();
+    }
+
+    private boolean isNetworkConnected(){
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
 
 
