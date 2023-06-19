@@ -324,6 +324,8 @@ public class HomeFragment extends Fragment {
         String totalAnswers = String.format("%d/%d", (totalCorrectAnswers), questions.size());
         bundle.putString("score", totalAnswers);
         navController.navigate(R.id.action_homeFragment_to_resultFragment2, bundle);
+        index = 0;
+        timer = null;
     }
 
     private void closeApplication(View view){

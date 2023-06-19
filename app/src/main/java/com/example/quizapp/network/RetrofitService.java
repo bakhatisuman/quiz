@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 
 public interface RetrofitService {
 //    @Headers("isCacheAvailable : yes")
-    @Headers({"isCacheAvailable: yes"})
+//    @Headers({"isCacheAvailable: yes"})
     @GET("api.php")
     Call<Quiz> sendQuizListRequest(@Query("amount") int amount);
 }
