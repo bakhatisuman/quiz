@@ -356,7 +356,7 @@ public class HomeFragment extends Fragment {
     }
     private void showQuitDialogForBackPressed(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.quit_quiz).
+        builder.setMessage(R.string.close_app).
                 setCancelable(false)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

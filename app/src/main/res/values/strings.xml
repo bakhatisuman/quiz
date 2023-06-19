@@ -3,6 +3,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="quit_quiz">Do you want to quit the Quiz !</string>
+    <string name="close_app">Do you want to close Quiz app</string>
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="loading_your_first_question">Loading your first question ...</string>
