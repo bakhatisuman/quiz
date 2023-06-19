@@ -69,7 +69,10 @@ public class SplashFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_splash, container, false);
+        View view  =  inflater.inflate(R.layout.fragment_splash, container, false);
+        waitingTimeForSplash(view);
+
+        return  view;
 
 
     }
@@ -77,7 +80,6 @@ public class SplashFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        waitingTimeForSplash(view);
     }
 
 

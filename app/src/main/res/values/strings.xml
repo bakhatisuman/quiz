@@ -17,4 +17,5 @@
     <string name="_caps">YOUR SCORE</string>
     <string name="congratulations">Congratulations!</string>
     <string name="trophy">trophy</string>
+    <string name="start_quiz">Start Quiz</string>
 </resources>
